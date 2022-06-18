@@ -15,4 +15,4 @@ This application will focus on applying regression models to existing eye image 
 
 ### Notes
 
-TBD
+Srivastava, N., Newn, J., & Velloso, E. (2018). Combining Low and Mid-Level Gaze Features for Desktop Activity Recognition. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 2(4), 189.

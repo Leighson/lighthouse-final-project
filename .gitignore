@@ -1,1 +1,22 @@
+## TEXT DATA ##
 *.csv
+*.json
+*.txt
+
+## IMAGE DATA ##
+*.jpg
+*.jpeg
+*.png
+
+## CONTAINERS ##
+# .h5 is a data file saved in the Hierarchical Data Format (HDF)
+# it contains multidimensional arrays of scientific data
+# commonly used in aerospace, physics, engineering, finance,
+# academic research, genomics, astronomu, electronic instruments, and
+# medical fields
+*.h5
+
+## CHECKPOINTS ##
+
+# jupyter notebook
+*-jvsc-*.ipynb
