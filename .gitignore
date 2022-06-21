@@ -1,7 +1,6 @@
 ## TEXT DATA ##
 *.csv
 *.json
-*.txt
 
 ## IMAGE DATA ##
 *.jpg
@@ -15,8 +14,15 @@
 # academic research, genomics, astronomu, electronic instruments, and
 # medical fields
 *.h5
+*.mat
+*.m
 
 ## CHECKPOINTS ##
 
 # jupyter notebook
+*-checkpoint.ipynb
 *-jvsc-*.ipynb
+*.pyc
+
+# macOS folder information
+.DS_Store
