@@ -1,0 +1,59 @@
+## MODEL ##
+
+from tensorflow.keras import layers, Model
+
+def basline_model(image_size):
+    
+    # image input parameters
+    inputs = layers.Input(shape=(image_size[0], image_size[1], 1))
+    
+    # convolusion, activation filer, pool
+    x = layers.Conv2D(64, kernel_size=(5, 5))(inputs)
+    x = layers.ReLU()(x)
+    x = layers.MaxPool2D((2, 2))(x)
+    
+    # denses layers to coordinates prediction
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dense(units=256)(x)
+    x = layers.ReLU()(x)
+    x = layers.Dense(units=30)(x)
+    
+    model = Model(inputs, outputs=x)
+    
+    return model
+
+def build_model(image_size):
+    
+    # image input parameters
+    inputs = layers.Input(shape=(image_size[0], image_size[1], 1))
+    
+    # convolusion, activation filer, pool
+    x = layers.Conv2D(32, kernel_size=(5, 5))(inputs)
+    x = layers.ReLU()(x)
+    x = layers.MaxPool2D((2, 2))(x)
+    
+    x = layers.Conv2D(64, kernel_size=(3, 3))(x)
+    x = layers.ReLU()(x)
+    x = layers.MaxPool2D((2, 2))(x)
+    
+    x = layers.Conv2D(128, kernel_size=(3, 3))(x)
+    x = layers.ReLU()(x)
+    x = layers.MaxPool2D((2, 2))(x)
+    
+    x = layers.Conv2D(256, kernel_size=(3, 3))(x)
+    x = layers.ReLU()(x)
+    x = layers.MaxPool2D((2, 2))(x)
+    
+    x = layers.Conv2D(512, kernel_size=(3, 3))(x)
+    x = layers.ReLU()(x)
+    x = layers.MaxPool2D((2, 2))(x)
+    
+     # denses layers to coordinates prediction
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dense(units=256)(x)
+    x = layers.ReLU()(x)
+    x = layers.Dense(units=2)(x)
+    
+    model = Model(inputs, outputs=x)
+    
+    return model
