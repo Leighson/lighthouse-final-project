@@ -3,7 +3,7 @@
 from modules.config import BASE_PATH, OUTPUT_PATH, ANNOT_PATHS, IMAGE_PATH, IMAGE_NAMES
 from modules.config import PERSON, SECTIONS, COLORSPACE, STRIDE, RESIZE, RESIZE_FACTOR
 from modules.config import SAMPLE_SIZE, MARKER, MARKERCOLOR, MARKERSIZE
-from modules.config import BATCH_SIZE
+from modules.config import BATCH_SIZE, SPLIT
 
 import os
 import numpy as np
@@ -177,7 +177,7 @@ def get_keypoints(with_image_locs, scale, save):
         df_keypoints = pd.concat( [df_keypoints, get_image_names() ], axis=1)
         print(f'... and add column of image filenames to keypoint DataFrame.')
     
-    print(f'Reducing keypoint data from ({len(df_keypoints.index)}...')
+    print(f'Reducing keypoint data from ({len(df_keypoints.index)})...')
     
     df_keypoints = df_keypoints.iloc[lambda x: x.index % STRIDE == 0]
     df_keypoints_sampled = df_keypoints[:BATCH_SIZE]
@@ -194,14 +194,13 @@ def get_keypoints(with_image_locs, scale, save):
     
     # save annotation dataframe to file (parquet)
     if save==True:
-        # df_keypoints.to_csv(f'{OUTPUT_PATH}/p{PERSON}_kpts.csv', ',')
         table = Table.from_pandas(df_keypoints_sampled)
         parquet.write_table(table, f'{OUTPUT_PATH}/P{PERSON}_kpts.parquet')
         print(f'Saved keypoint dataframe to {OUTPUT_PATH}/P{PERSON}_kpts.parquet.\n')
     
     return df_keypoints_sampled
 
-def show_image_keypoint(imgs, keypoints, window):
+def show_image_keypoint(imgs, keypoints, window, save):
     '''
     Visualize one image with its keypoint.
 
@@ -209,6 +208,7 @@ def show_image_keypoint(imgs, keypoints, window):
         imgs (pd.DataFrame): image dataset
         keypoints (pd.DataFrame): keypoint dataset
         window (hashable): define start and stop window for slice sampling the datasets
+        save (bool): save to file if True
     '''
     start = window[0]
     end = window[1]
@@ -223,12 +223,24 @@ def show_image_keypoint(imgs, keypoints, window):
         ax.axis('off')
         ax.imshow(img)
         ax.plot(kps[1][0], kps[1][1], color=MARKERCOLOR, marker=MARKER, markersize=MARKERSIZE)
-        
+    
+        if save==True:
+            cv2.imwrite(f'{OUTPUT_PATH}/figures/GIF_train/{kps[1][2]}', img)
+    
     plt.tight_layout()
     plt.show()
 
 def plot_image_keypoints(imgs, keypoints, pivot):
-    
+    '''
+    Plot images with keypoints. Differs from show_image_keypoint because this outputs
+    a grid visual of multiple images.
+
+    Args:
+        imgs (pd.DataFrame): images in DataFrame
+        keypoints (pd.DataFrame): keypoints in DataFrame
+        pivot (string): 'col' or 'row'; think of it as an anchor
+        
+    '''
     if pivot=='col':
         # define plot
         row = 0
@@ -323,27 +335,6 @@ def save_loss_plots(history):
     plt.show()
 
 
-
-# os.path.sep.join([out, f'person{person}_img.csv']
-
-# def image_to_array(images, save=True, pathname=None):
-#     '''
-#     image_to_array
-#     Converts image data to arrays
-
-#     Args:
-#         images (pandas.Series): data series of indexed image pathnames
-
-#     Returns:
-#         _type_: _description_
-#     '''
-#     X = np.array([np.array(Image.open(img), 'float') for img in images])
-    
-#     # save to file
-#     if save==True:
-#         X.tofile(pathname, sep=',')
-    
-#     return X
 
 # Adding leading zeroes to the image name:
 # {0 : 0 > 4}

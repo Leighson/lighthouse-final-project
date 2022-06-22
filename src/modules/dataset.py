@@ -1,5 +1,8 @@
-from modules import config, utils, model
-import cv2
+from modules.config import BASE_PATH, OUTPUT_PATH, ANNOT_PATHS, IMAGE_PATH, IMAGE_NAMES
+from modules.config import PERSON, SECTIONS, COLORSPACE, STRIDE, RESIZE, RESIZE_FACTOR
+from modules.config import BATCH_SIZE, SPLIT
+from modules import utils
+from sklearn.model_selection import train_test_split
 
 import os
 import numpy as np
@@ -7,9 +10,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set_theme(style='darkgrid')
 
-from sklearn.model_selection import train_test_split
+from pyarrow import parquet, Table
+import cv2
 
-def get_data():
+def get_data(save):
     
     # get images and target outputs, then convert image to dataframe and save (~45min)
     img_array = utils.get_images(save=False, result='array')
@@ -17,8 +21,19 @@ def get_data():
     # print(f'dx_images: {img_array}, df_keypoints: {df_keypoints}')
 
     # X image arrays, y keypoint coordinates
-    Xtrain, Xtest, ytrain, ytest = train_test_split(img_array, df_keypoints[['x', 'y']], test_size=config.SPLIT)
+    Xtrain, Xtest, ytrain, ytest = train_test_split(img_array, df_keypoints[['x', 'y']], test_size=SPLIT)
     
-    print(f'SUMMARY\nXtrain: {len(Xtrain)}\nXtest: {len(Xtest)}\nytrain: {len(ytrain)}\nytest: {len(ytest)}')
+    print(f'SUMMARY\n++++++++++\nXtrain:\t{len(Xtrain)}\nXtest:\t{len(Xtest)}\nytrain:\t{len(ytrain)}\nytest:\t{len(ytest)}\n')
+    
+    # save training/validation sets to file (parquet)
+    if save==True:
+        for name, dataset in {'Xtrain':Xtrain, 'Xtest':Xtest, 'ytrain':ytrain, 'ytest':ytest}.items():
+            # convert X data from array to DataFrame
+            if name == 'Xtrain' or name == 'Xtest':
+                dataset = utils.array_to_df(dataset)
+            
+            table = Table.from_pandas(dataset)
+            parquet.write_table(table, f'{OUTPUT_PATH}/train_val/P{PERSON}_{name}.parquet')
+            print(f'Saved {name} dataframe to {OUTPUT_PATH}/train_val/P{PERSON}_{name}.parquet.')
     
     return Xtrain, Xtest, ytrain, ytest
