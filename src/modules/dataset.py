@@ -11,13 +11,14 @@ from sklearn.model_selection import train_test_split
 
 def get_data():
     
-    # get images, then convert image to dataframe and save (~45min)
-    df_images = utils.get_images(save=True, return_df=False)
-
-    # target dataframe and output
-    df_keypoints = utils.get_keypoints(with_image_locs=True, save=True)
+    # get images and target outputs, then convert image to dataframe and save (~45min)
+    img_array = utils.get_images(save=False, result='array')
+    df_keypoints = utils.get_keypoints(with_image_locs=True, scale=True, save=False)
+    # print(f'dx_images: {img_array}, df_keypoints: {df_keypoints}')
 
     # X image arrays, y keypoint coordinates
-    Xtrain, Xtest, ytrain, ytest = train_test_split(df_images, df_keypoints[['x', 'y']], test_size=config.SPLIT)
+    Xtrain, Xtest, ytrain, ytest = train_test_split(img_array, df_keypoints[['x', 'y']], test_size=config.SPLIT)
+    
+    print(f'SUMMARY\nXtrain: {len(Xtrain)}\nXtest: {len(Xtest)}\nytrain: {len(ytrain)}\nytest: {len(ytest)}')
     
     return Xtrain, Xtest, ytrain, ytest

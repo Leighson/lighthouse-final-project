@@ -1,7 +1,7 @@
-from model import basline_model, build_model
+from model import baseline_model, final_model
 from dataset import get_data
 from utils import save_plots
-from config import LR, RESIZE, EPOCHS
+from config import LR, EPOCHS
 
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.losses import MeanSquaredError
@@ -18,22 +18,21 @@ model_checkpoint = ModelCheckpoint(
 Xtrain, Xtest, ytrain, ytest = get_data()
 
 # build and compile the model
-model = build_model( (RESIZE, RESIZE) )
+model = baseline_model()
+print(model.summary())
 
-print( model.summary() )
 model.compile(
     optimizer=Adam(learning_rate=LR),
-    loss=MeanSquaredError() )
+    loss=MeanSquaredError())
 
-# Train the model.
+# train model
 history = model.fit(
     (Xtrain, ytrain),
     validation_data=(Xtest, ytest),
     epochs=EPOCHS,
     callbacks=[model_checkpoint],
     workers=4, 
-    use_multiprocessing=True
-)
+    use_multiprocessing=True)
 
-# 
+# plot and save history
 save_plots(history)

@@ -1,11 +1,12 @@
 ## MODEL ##
 
 from tensorflow.keras import layers, Model
+from modules.config import RESIZE
 
-def basline_model(image_size):
+def baseline_model():
     
     # image input parameters
-    inputs = layers.Input(shape=(image_size[0], image_size[1], 1))
+    inputs = layers.Input(shape=(RESIZE[0], RESIZE[1], 1))
     
     # convolusion, activation filer, pool
     x = layers.Conv2D(64, kernel_size=(5, 5))(inputs)
@@ -22,10 +23,10 @@ def basline_model(image_size):
     
     return model
 
-def build_model(image_size):
+def final_model():
     
     # image input parameters
-    inputs = layers.Input(shape=(image_size[0], image_size[1], 1))
+    inputs = layers.Input(shape=(RESIZE[0], RESIZE[1], 1))
     
     # convolusion, activation filer, pool
     x = layers.Conv2D(32, kernel_size=(5, 5))(inputs)
