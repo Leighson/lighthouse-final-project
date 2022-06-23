@@ -21,7 +21,10 @@ def get_data(save):
     # print(f'dx_images: {img_array}, df_keypoints: {df_keypoints}')
 
     # X image arrays, y keypoint coordinates
-    Xtrain, Xtest, ytrain, ytest = train_test_split(img_array, df_keypoints[['x', 'y']], test_size=SPLIT)
+    Xtrain, Xtest, ytrain, ytest = train_test_split(
+        np.array(img_array),
+        df_keypoints[['x', 'y']],
+        test_size=SPLIT)
     
     print(f'SUMMARY\n++++++++++\nXtrain:\t{len(Xtrain)}\nXtest:\t{len(Xtest)}\nytrain:\t{len(ytrain)}\nytest:\t{len(ytest)}\n')
     

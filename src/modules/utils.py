@@ -299,12 +299,14 @@ def plot_image_keypoints(imgs, keypoints, pivot):
         plt.tight_layout()
         plt.show()
 
-def save_loss_plots(history):
+def save_loss_plots(history, title, filename):
     """
     Plot and save resulting losses from model training.
     
     Args:
         history (method): results from model training
+        title (string): set plot title
+        filename (string): set filename to save
 
     Returns:
         None
@@ -314,6 +316,7 @@ def save_loss_plots(history):
     
     # loss plot
     plt.figure(figsize=(15, 10))
+    plt.title(title)
     plt.plot(
         train_loss,
         color='blue',
@@ -329,8 +332,8 @@ def save_loss_plots(history):
     plt.ylabel('Loss')
     
     plt.legend()
-    plt.savefig(f'{OUTPUT_PATH}/figures/loss_plot.png')
-    print(f'Saved figure to {OUTPUT_PATH}/figures/loss_plot.png')
+    plt.savefig(f'{OUTPUT_PATH}/figures/{filename}.png')
+    print(f'Saved figure to {OUTPUT_PATH}/figures/{filename}.png')
     
     plt.show()
 

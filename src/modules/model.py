@@ -26,7 +26,7 @@ def baseline_model():
 def final_model():
     
     # image input parameters
-    inputs = layers.Input(shape=(RESIZE[0], RESIZE[1], 1))
+    inputs = layers.Input(shape=(RESIZE[1], RESIZE[0], 1))
     
     # convolusion, activation filer, pool
     x = layers.Conv2D(32, kernel_size=(5, 5))(inputs)
