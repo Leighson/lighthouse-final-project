@@ -27,9 +27,9 @@ MARKERSIZE = 20
 MARKER = 'X'
 
 # learning #
-BATCH_SIZE = 32
+BATCH_SIZE = 500
 LR = 0.001
-EPOCHS = 300
+EPOCHS = 500
 
 # data splitting #
 SPLIT = 0.2

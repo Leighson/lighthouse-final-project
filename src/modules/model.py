@@ -1,7 +1,7 @@
 ## MODEL ##
 
-from tensorflow.keras import layers, Model
-from modules.config import RESIZE
+from tensorflow.keras import layers, Model, regularizers
+from modules.config import RESIZE, LR
 
 def baseline_model():
     
@@ -9,7 +9,7 @@ def baseline_model():
     inputs = layers.Input(shape=(RESIZE[1], RESIZE[0], 1))
     
     # convolusion, activation filer, pool
-    x = layers.Conv2D(64, kernel_size=(5, 5))(inputs)
+    x = layers.Conv2D(64, kernel_size=(5, 5), kernel_regularizer=regularizers.l2(l=LR))(inputs)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
@@ -29,23 +29,23 @@ def final_model():
     inputs = layers.Input(shape=(RESIZE[1], RESIZE[0], 1))
     
     # convolusion, activation filer, pool
-    x = layers.Conv2D(32, kernel_size=(5, 5))(inputs)
+    x = layers.Conv2D(32, kernel_size=(5, 5), kernel_regularizer=regularizers.l2(l=LR))(inputs)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(64, kernel_size=(3, 3))(x)
+    x = layers.Conv2D(64, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(128, kernel_size=(3, 3))(x)
+    x = layers.Conv2D(128, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(256, kernel_size=(3, 3))(x)
+    x = layers.Conv2D(256, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(512, kernel_size=(3, 3))(x)
+    x = layers.Conv2D(512, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     

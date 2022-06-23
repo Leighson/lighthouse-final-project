@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set_theme(style='darkgrid', palette='viridis')
 
+from sklearn.preprocessing import StandardScaler
 from pyarrow import parquet, Table
 import cv2
 
@@ -77,11 +78,12 @@ def get_image_locs():
     
     return image_locs
 
-def get_images(save, result):
+def get_images(scale, save, result):
     '''
     Read the image, set the colorspace, and save if specified.
 
     Args:
+        scale (bool) : scales data using StandardScaler() if True
         save (bool): saves to .parquet file if True
         result (string): 'df', 'dx', or 'array'
 
@@ -110,8 +112,14 @@ def get_images(save, result):
             
     print(f'Resizing images from {pd.DataFrame(image).shape} to {RESIZE}.\n')
     
+    scaled_images = []
+    if scale==True:
+        scaler = StandardScaler()
+        for image in images:
+            scaled_images.append(scaler.fit_transform(np.array(image)))
+    
     # convert array to dataframe
-    df_images = array_to_df(images)
+    df_images = array_to_df(scaled_images)
     dx_images = df_images.to_xarray()
     
     # save to file if set to True
@@ -153,7 +161,7 @@ def get_keypoints(with_image_locs, scale, save):
 
     Args:
         with_image_locs (bool): add image location column if True
-        scale (bool): scale values using resize factor
+        scale (bool): scale to image using RESIZE_FACTOR if True
         save (bool): saves to .parquet file if True
 
     Returns:
@@ -172,11 +180,6 @@ def get_keypoints(with_image_locs, scale, save):
         # add to existing keypoints dataframe
         df_keypoints = pd.concat( [df_keypoints, df_new] ).reset_index(drop=True)
     
-    if with_image_locs==True:
-        # add image locations to dataframe
-        df_keypoints = pd.concat( [df_keypoints, get_image_names() ], axis=1)
-        print(f'... and add column of image filenames to keypoint DataFrame.')
-    
     print(f'Reducing keypoint data from ({len(df_keypoints.index)})...')
     
     df_keypoints = df_keypoints.iloc[lambda x: x.index % STRIDE == 0]
@@ -189,16 +192,21 @@ def get_keypoints(with_image_locs, scale, save):
         print(f'... to ({BATCH_SIZE})\n')
     
     if scale==True:
-        df_keypoints_sampled[['x','y']] = df_keypoints_sampled[['x','y']].apply(
-            lambda x: x/RESIZE_FACTOR)
+        df_keypoints_sampled['x'] = df_keypoints_sampled['x'] / RESIZE_FACTOR
+        df_keypoints_sampled['y'] = df_keypoints_sampled['y'] / RESIZE_FACTOR
+    
+    if with_image_locs==True:
+        # add image locations to dataframe
+        df_keypoints_scaled = pd.concat( [df_keypoints_sampled, get_image_names()[:BATCH_SIZE] ], axis=1)
+        print(f'... and add column of image filenames to keypoint DataFrame.')
     
     # save annotation dataframe to file (parquet)
     if save==True:
-        table = Table.from_pandas(df_keypoints_sampled)
+        table = Table.from_pandas(df_keypoints_scaled)
         parquet.write_table(table, f'{OUTPUT_PATH}/P{PERSON}_kpts.parquet')
         print(f'Saved keypoint dataframe to {OUTPUT_PATH}/P{PERSON}_kpts.parquet.\n')
     
-    return df_keypoints_sampled
+    return df_keypoints_scaled
 
 def show_image_keypoint(imgs, keypoints, window, save):
     '''
@@ -217,6 +225,7 @@ def show_image_keypoint(imgs, keypoints, window, save):
     keypoints = keypoints[start:end]
     
     for i, (img, kps) in enumerate(zip(imgs, keypoints.iterrows())):
+        print(img,kps)
         
         _, ax = plt.subplots(figsize=(15,12))
         
@@ -317,12 +326,12 @@ def save_loss_plots(history, title, filename):
     # loss plot
     plt.figure(figsize=(15, 10))
     plt.title(title)
-    plt.plot(
+    plt.semilogy(
         train_loss,
         color='blue',
         linestyle='-', 
         label='Train Loss')
-    plt.plot(
+    plt.semilogy(
         validation_loss,
         color='red',
         linestyle='-', 
