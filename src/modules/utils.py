@@ -317,7 +317,7 @@ def save_loss_plots(history):
     plt.plot(
         train_loss,
         color='blue',
-        linestyle='=', 
+        linestyle='-', 
         label='Train Loss')
     plt.plot(
         validation_loss,
@@ -333,8 +333,6 @@ def save_loss_plots(history):
     print(f'Saved figure to {OUTPUT_PATH}/figures/loss_plot.png')
     
     plt.show()
-
-
 
 # Adding leading zeroes to the image name:
 # {0 : 0 > 4}

@@ -1,7 +1,7 @@
 from model import baseline_model, final_model
 from dataset import get_data
-from utils import save_plots
 from config import LR, EPOCHS
+import utils
 
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.losses import MeanSquaredError
@@ -15,7 +15,7 @@ model_checkpoint = ModelCheckpoint(
     save_best_only=True)
 
 # load training and validation data
-Xtrain, Xtest, ytrain, ytest = get_data()
+Xtrain, Xtest, ytrain, ytest = get_data(save=False)
 
 # build and compile the model
 model = baseline_model()
@@ -35,4 +35,4 @@ history = model.fit(
     use_multiprocessing=True)
 
 # plot and save history
-save_plots(history)
+utils.save_loss_plots(history)
