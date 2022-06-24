@@ -78,7 +78,7 @@ def get_image_locs():
     
     return image_locs
 
-def get_images(scale, save, result):
+def get_images(image_set, scale, save, result):
     '''
     Read the image, set the colorspace, and save if specified.
 
@@ -125,8 +125,8 @@ def get_images(scale, save, result):
     # save to file if set to True
     if save==True:
         table = Table.from_pandas(df_images.loc[(range(BATCH_SIZE), ), :])
-        parquet.write_table(table, f'{OUTPUT_PATH}/P{PERSON}_imgs.parquet')
-        print(f'Saved image dataframe to {OUTPUT_PATH}/P{PERSON}_imgs.parquet.\n')
+        parquet.write_table(table, f'{OUTPUT_PATH}/P{image_set}_imgs.parquet')
+        print(f'Saved image dataframe to {OUTPUT_PATH}/P{image_set}_imgs.parquet.\n')
     
     # return dataframe, xarray, or image array
     # use df for plotting, hence SAMPLE_SIZE
@@ -208,33 +208,94 @@ def get_keypoints(with_image_locs, scale, save):
     
     return df_keypoints_scaled
 
-def show_image_keypoint(imgs, keypoints, window, save):
+def show_image_keypoint(imgs, kind, kpactual=None, kppred=None, window=None, save=False, filename=None):
     '''
     Visualize one image with its keypoint.
 
     Args:
         imgs (pd.DataFrame): image dataset
-        keypoints (pd.DataFrame): keypoint dataset
-        window (hashable): define start and stop window for slice sampling the datasets
-        save (bool): save to file if True
+        new (string): indicate whether or not this is training or new data
+        kpactual (pd.DataFrame): testing keypoints
+        kppred (pd.DataFrame): predicted keypoints
+        window (hashable, optional): define start and stop window for slice sampling the datasets
+        save (bool, optional): save to file if True; defaults to False
+        filename (string, optional): set filename; only required if save is True
     '''
-    start = window[0]
-    end = window[1]
     
-    imgs = imgs[start:end]
-    keypoints = keypoints[start:end]
-    
-    for i, (img, kps) in enumerate(zip(imgs, keypoints.iterrows())):
-        print(img,kps)
+    if kppred is None:
         
-        _, ax = plt.subplots(figsize=(15,12))
+        if window == None:
+            pass
+        else:
+            start = window[0]
+            end = window[1]
+            imgs = imgs[start:end]
+            kpactual = kpactual[start:end]
         
-        ax.axis('off')
-        ax.imshow(img)
-        ax.plot(kps[1][0], kps[1][1], color=MARKERCOLOR, marker=MARKER, markersize=MARKERSIZE)
-    
-        if save==True:
-            cv2.imwrite(f'{OUTPUT_PATH}/figures/GIF_train/{kps[1][2]}', img)
+        # only actual values are provided
+        for i, (img, kpact) in enumerate(zip(imgs, kpactual.iterrows())):
+            print(img, kpact)
+            
+            # define plot
+            _, ax = plt.subplots(figsize=(15,12))
+            
+            # print image
+            ax.axis('off')
+            ax.imshow(img)
+            
+            # overlay keypoints on image
+            ax.plot(kpact[1][0], kpact[1][1], color=MARKERCOLOR, marker=MARKER, markersize=MARKERSIZE)
+        
+            if save==True:
+                plt.savefig(f'{OUTPUT_PATH}/figures/GIF_train/{kind}-{i}_{filename}_{kpact[1][0]:.2f}-{kpact[1][1]:.2f}.png')
+            
+    else:
+        
+        if window == None:
+            pass
+        else:
+            start = window[0]
+            end = window[1]
+            imgs = imgs[start:end]
+            kpactual = kpactual[start:end]
+            kppred = kppred[start:end]
+        
+        # only predicted values are provided
+        if kpactual is None:
+            for i, (img, kppred) in enumerate(zip(imgs, kppred.iterrows())):
+                print(img, kppred)
+                
+                # define plot
+                _, ax = plt.subplots(figsize=(15,12))
+                
+                # print image
+                ax.axis('off')
+                ax.imshow(img)
+                
+                # overlay keypoints on image
+                ax.plot(kppred[1][0], kppred[1][1], color='yellow', marker='+', markersize=MARKERSIZE)
+        
+                if save==True:
+                    plt.savefig(f'{OUTPUT_PATH}/figures/GIF_predict/{kind}/{kind}-{i}_{filename}_{kppred[1][0]:.2f}-{kppred[1][1]:.2f}.png')
+        
+        # both values are provided
+        else:
+            for i, (img, kpact, kppred) in enumerate(zip(imgs, kpactual.iterrows(), kppred.iterrows())):
+                print(img, kpact, kppred)
+                
+                # define plot
+                _, ax = plt.subplots(figsize=(15,12))
+                
+                # print image
+                ax.axis('off')
+                ax.imshow(img)
+                
+                # overlay keypoints on image
+                ax.plot(kpact[1][0], kpact[1][1], color=MARKERCOLOR, marker=MARKER, markersize=MARKERSIZE)
+                ax.plot(kppred[1][0], kppred[1][1], color='yellow', marker='+', markersize=MARKERSIZE)
+        
+                if save==True:
+                    plt.savefig(f'{OUTPUT_PATH}/figures/GIF_predict/{kind}/{kind}-{i}_{filename}_{kpact[1][0]:.2f}-{kpact[1][1]:.2f}_{kppred[1][0]:.2f}-{kppred[1][1]:.2f}.png')
     
     plt.tight_layout()
     plt.show()

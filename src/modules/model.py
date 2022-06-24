@@ -9,7 +9,7 @@ def baseline_model():
     inputs = layers.Input(shape=(RESIZE[1], RESIZE[0], 1))
     
     # convolusion, activation filer, pool
-    x = layers.Conv2D(64, kernel_size=(5, 5), kernel_regularizer=regularizers.l2(l=LR))(inputs)
+    x = layers.Conv2D(64, kernel_size=(5, 5), kernel_regularizer=regularizers.l2(l=LR), kernel_initializer='he_normal')(inputs)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
@@ -29,23 +29,23 @@ def final_model():
     inputs = layers.Input(shape=(RESIZE[1], RESIZE[0], 1))
     
     # convolusion, activation filer, pool
-    x = layers.Conv2D(32, kernel_size=(5, 5), kernel_regularizer=regularizers.l2(l=LR))(inputs)
+    x = layers.Conv2D(32, kernel_size=(5, 5), kernel_regularizer=regularizers.l2(l=LR), kernel_initializer='he_normal')(inputs)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(64, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
+    x = layers.Conv2D(64, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR), kernel_initializer='he_normal')(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(128, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
+    x = layers.Conv2D(128, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR), kernel_initializer='he_normal')(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(256, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
+    x = layers.Conv2D(256, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR), kernel_initializer='he_normal')(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     
-    x = layers.Conv2D(512, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR))(x)
+    x = layers.Conv2D(512, kernel_size=(3, 3), kernel_regularizer=regularizers.l2(l=LR), kernel_initializer='he_normal')(x)
     x = layers.ReLU()(x)
     x = layers.MaxPool2D((2, 2))(x)
     

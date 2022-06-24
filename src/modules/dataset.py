@@ -16,7 +16,7 @@ import cv2
 def get_data(save):
     
     # get images and target outputs, then convert image to dataframe and save (~45min)
-    img_array = utils.get_images(scale=True, save=False, result='array')
+    img_array = utils.get_images(image_set=PERSON, scale=True, save=False, result='array')
     df_keypoints = utils.get_keypoints(with_image_locs=True, scale=True, save=False)
 
     # X image arrays, y keypoint coordinates

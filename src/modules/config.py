@@ -6,8 +6,10 @@ import glob
 ### PARAMETERS ###
 
 # data #
-PERSON = 1
+PERSON = 1 # for testing
+NEW_PERSON = 2 #
 SECTIONS = [1, 4, 9]
+NEW_SECTIONS = [4,10,13]
 COLORSPACE = 'grayscale'
 STRIDE = 12
 RESIZE_FACTOR = 5
@@ -23,7 +25,7 @@ IMAGE_NAMES = [os.path.basename(IMAGE) for IMAGE in IMAGE_PATH]
 # plotting #
 SAMPLE_SIZE = 10
 MARKERCOLOR = 'green'
-MARKERSIZE = 20
+MARKERSIZE = 30
 MARKER = 'X'
 
 # learning #
